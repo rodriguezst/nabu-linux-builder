@@ -99,4 +99,34 @@ jobs:
         with:
           pattern: *.dtb
       # TODO: generate grub config (.cfg + full esp img for first installation)
-      
+      - name: install-build-dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt install \
+            gdisk \
+            zip \
+            systemd-container \
+            bmap-tools asciidoc \
+            libarchive-tools \
+            git \
+            build-essential \
+            cmake \
+            libarchive-dev \
+            pkg-config \
+            libcurl4-openssl-dev \
+            libgpgme-dev \
+            libssl-dev \
+            fakeroot \
+            dh-autoreconf \
+            qemu-utils \
+            qemu-efi-aarch64 \
+            qemu-system-arm \
+            qemu-user-static
+          sudo pip3 install meson
+          sudo pip3 install ninja
+      - name: setup-qemu-binfmt
+        shell: bash
+        run: |
+          sudo wget https://gitlab.manjaro.org/packages/community/manjaro-arm-qemu-static/-/raw/master/qemu-static.conf -O /usr/lib/binfmt.d/qemu-static.conf
+          sudo service systemd-binfmt restart
