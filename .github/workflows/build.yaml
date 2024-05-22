@@ -13,8 +13,13 @@ jobs:
   kernel:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'rodriguezst/linux'
+          ref: 'v6.1.10-nabu-maverickjb'
+          fetch-depth: '1'
+
       - name: Install Dependencies
         run: sudo apt update && sudo apt install build-essential gcc-aarch64-linux-gnu bc flex bison 7zip kmod bash cpio binutils tar git wget dpkg libssl-dev
 
@@ -32,12 +37,6 @@ jobs:
     name: boot zip installer Build
     runs-on: ubuntu-latest
 
-    strategy:
-      max-parallel: 8
-      matrix:
-        device:
-          - nabu
-
     steps:
       # Checks-out edk2-porting repository
       - name: Checkout repository
@@ -45,7 +44,7 @@ jobs:
         with:
           repository: 'edk2-porting/edk2-msm'
           ref: 'main'
-          fetch-depth: ''
+          fetch-depth: '1'
 
       - name: Install requires packages
         run: |
@@ -56,12 +55,12 @@ jobs:
 
       - name: Build device ${{ matrix.device }}
         run: |
-          ./build.sh --device ${{ matrix.device }} --installer-zip
+          ./build.sh --device nabu --installer-zip
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with: # Artifact name
-          name: ${{ matrix.device }}
+          name: nabu-boot-installer
           # A file, directory or wildcard pattern that describes what to upload
           path: ./*.zip
 
@@ -93,3 +92,11 @@ jobs:
           name: rootfs_${{ matrix.desktop }}_${{ matrix.kernel }}
           path: rootfs.7z
           compression-level: 0
+  esp:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: *.dtb
+      # TODO: generate grub config (.cfg + full esp img for first installation)
+      
