@@ -70,8 +70,7 @@ jobs:
     needs: kernel
     strategy:
             matrix:
-                desktop: [ubuntu-desktop, lomiri]
-                kernel: [6.7, 6.8]
+                desktop: [gnome, mate, kde-plasma, xfce, minimal]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -79,6 +78,12 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: xiaomi-nabu-debs*
+      - uses: robinraju/release-downloader@v1.10
+        with:
+          repository: 'manjaro-arm/generic-efi-images'
+          fileName: '*${{ matrix.desktop }}*.img.xz'
+          latest: true
+          preRelease: true
       - name: Install Dependencies
         run: sudo apt update && sudo apt install unzip build-essential gcc-aarch64-linux-gnu bc flex bison 7zip kmod bash cpio binutils tar git wget dpkg libssl-dev
 
