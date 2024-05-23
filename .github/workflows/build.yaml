@@ -44,6 +44,7 @@ jobs:
   boot-installer:
     name: boot zip installer Build
     runs-on: ubuntu-latest
+    needs: kernel
 
     steps:
       # Checks-out edk2-porting repository
