@@ -2,7 +2,7 @@ name: linux-image-builder
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "WIP" ]
   pull_request:
     branches: [ "main" ]
 
@@ -24,14 +24,22 @@ jobs:
         run: sudo apt update && sudo apt install build-essential gcc-aarch64-linux-gnu bc flex bison 7zip kmod bash cpio binutils tar git wget dpkg libssl-dev
 
       - name: Build kernel
-        run: sudo sh nabu-kernel_build.sh ${{ matrix.version }}
+        run: |
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- xiaomi_nabu_maverick_defconfig
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz dtbs
+          make ARCH=arm64 install INSTALL_PATH=./install/boot
+          make ARCH=arm64 dtbs_install INSTALL_DTBS_PATH=./install/boot/dtbs
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
+          rm -rf ./install/lib/modules/
+          make ARCH=arm64 modules_install INSTALL_MOD_PATH=./install
+          cd ./install && tar zcvf ../kernel.tar.gz && cd ..
 
-      - name: Upload deb packages
+      - name: Upload built artifacts
         uses: actions/upload-artifact@v4.0.0
         with:
           # Artifact name
-          name: xiaomi-nabu-debs_${{ matrix.version }}
-          path: ${{ github.workspace }}/*.deb
+          name: kernel.tar.gz
+          path: ${{ github.workspace }}/kernel.tar.gz
 
   boot-installer:
     name: boot zip installer Build
@@ -69,16 +77,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: kernel
     strategy:
-            matrix:
-                desktop: [gnome, mate, kde-plasma, xfce, minimal]
+      matrix:
+        desktop: [gnome, mate, kde-plasma, xfce, minimal]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          pattern: xiaomi-nabu-debs*
-      - uses: robinraju/release-downloader@v1.10
+          pattern: kernel.tar.gz
+      - name: extract-kernel-artifacts
+        shell: bash
+        run: |
+          tar zxvf kernel.tar.gz
+      - id: image-download
+        uses: robinraju/release-downloader@v1.10
         with:
           repository: 'manjaro-arm/generic-efi-images'
           fileName: '*${{ matrix.desktop }}*.img.xz'
@@ -88,8 +101,8 @@ jobs:
         run: sudo apt update && sudo apt install unzip build-essential gcc-aarch64-linux-gnu bc flex bison 7zip kmod bash cpio binutils tar git wget dpkg libssl-dev
 
       - name: Build rootfs
-        run: sudo sh nabu-rootfs_build.sh ${{ matrix.desktop }} ${{ matrix.kernel }}
-
+        run: |
+          echo "${{ fromJson(steps.image-download.outputs.downloaded_files)[0] }}"
       - name: Upload rootfs.7z
         uses: actions/upload-artifact@v4.0.0
         with:
@@ -98,11 +111,28 @@ jobs:
           path: rootfs.7z
           compression-level: 0
   esp:
+    runs-on: ubuntu-latest
+    needs: kernel
+    strategy:
+      matrix:
+        desktop: [gnome, mate, kde-plasma, xfce, minimal]
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          pattern: *.dtb
+          pattern: kernel.tar.gz
+      - name: extract-kernel-artifacts
+        shell: bash
+        run: |
+          tar zxvf kernel.tar.gz
+      - id: image-download
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: 'manjaro-arm/generic-efi-images'
+          fileName: '*${{ matrix.desktop }}*.img.xz'
+          latest: true
+          preRelease: true
       # TODO: generate grub config (.cfg + full esp img for first installation)
       - name: install-build-dependencies
         shell: bash
