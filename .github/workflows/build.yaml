@@ -54,12 +54,22 @@ jobs:
           ref: 'main'
           fetch-depth: '1'
 
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: kernel.tar.gz
+      - name: extract-kernel-artifacts
+        shell: bash
+        run: |
+          mkdir ./artifacts
+          tar zxvf kernel.tar.gz -C ./artifacts
+          find ./artifacts
+          cp ./artifacts/dtbs/sm8150-xiaomi-nabu.dtb ./Platform/Xiaomi/sm8150/FdtBlob/nabu/sm8150-xiaomi-nabu.dtb
+          rm -rf ./artifacts
+
       - name: Install requires packages
         run: |
           sudo apt-get update
           sudo apt-get -y install build-essential uuid-dev clang llvm iasl nasm gcc-aarch64-linux-gnu abootimg python3-distutils python3-pil python3-git gettext
-
-      #TODO: Add dtb from kernel build here
 
       - name: Build device ${{ matrix.device }}
         run: |
