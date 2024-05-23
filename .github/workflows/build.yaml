@@ -27,12 +27,13 @@ jobs:
         run: |
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- xiaomi_nabu_maverick_defconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz dtbs
+          mkdir -p ./install/boot/dtbs
           make ARCH=arm64 install INSTALL_PATH=./install/boot
           make ARCH=arm64 dtbs_install INSTALL_DTBS_PATH=./install/boot/dtbs
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
           rm -rf ./install/lib/modules/
           make ARCH=arm64 modules_install INSTALL_MOD_PATH=./install
-          cd ./install && tar zcvf ../kernel.tar.gz && cd ..
+          cd ./install && tar zcvf ../kernel.tar.gz . && cd ..
 
       - name: Upload built artifacts
         uses: actions/upload-artifact@v4.0.0
