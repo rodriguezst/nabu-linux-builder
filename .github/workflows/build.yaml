@@ -65,7 +65,7 @@ jobs:
           mkdir ./artifacts
           tar zxvf kernel.tar.gz -C ./artifacts
           find ./artifacts
-          cp ./artifacts/dtbs/sm8150-xiaomi-nabu.dtb ./Platform/Xiaomi/sm8150/FdtBlob/nabu/sm8150-xiaomi-nabu.dtb
+          cp ./artifacts/boot/dtbs/sm8150-xiaomi-nabu-maverick.dtb ./Platform/Xiaomi/sm8150/FdtBlob/nabu/sm8150-xiaomi-nabu.dtb
           rm -rf ./artifacts
 
       - name: Install requires packages
