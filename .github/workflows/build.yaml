@@ -62,13 +62,8 @@ jobs:
       - name: extract-kernel-artifacts
         shell: bash
         run: |
-          echo "before unzip"
-          find ./
-          unzip kernel.tar.gz.zip
-          echo "after unzip"
-          find ./
           mkdir ./artifacts
-          tar zxvf kernel.tar.gz -C ./artifacts
+          tar zxvf kernel.tar.gz/kernel.tar.gz -C ./artifacts
           echo "after untar"
           find ./artifacts
           cp ./artifacts/boot/dtbs/sm8150-xiaomi-nabu-maverick.dtb ./Platform/Xiaomi/sm8150/FdtBlob/nabu/sm8150-xiaomi-nabu.dtb
@@ -107,7 +102,8 @@ jobs:
       - name: extract-kernel-artifacts
         shell: bash
         run: |
-          tar zxvf kernel.tar.gz
+          tar zxvf kernel.tar.gz/kernel.tar.gz
+          find ./
       - id: image-download
         uses: robinraju/release-downloader@v1.10
         with:
