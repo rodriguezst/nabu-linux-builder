@@ -146,14 +146,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-      #- uses: actions/download-artifact@v4
-      #  with:
-      #    pattern: kernel.tar.gz
-      #- name: extract-kernel-artifacts
-      #  shell: bash
-      #  run: |
-      #    tar zxvf kernel.tar.gz/kernel.tar.gz
-      #    find ./
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: kernel.tar.gz
+      - name: extract-kernel-artifacts
+        shell: bash
+        run: |
+          tar zxvf kernel.tar.gz/kernel.tar.gz
+          find ./
       - id: image-download
         uses: robinraju/release-downloader@v1.10
         with:
@@ -173,13 +173,18 @@ jobs:
           chmod +x image_mount.sh
           sudo ./image_mount.sh manjaro.img ./mnt
           sudo find ./mnt/
+          sudo rm -rf ./mnt/part1/lib/modules/*
+          sudo cp ./lib/modules/* ./mnt/lib/modules/
+          # TODO: Copy kernel binary to rootfs
+          sudo ./image_extract.sh manjaro.img ./artifacts 1
+          cd ./mnt/part1 && tar zcvf ../../artifacts/rootfs.tar.gz . && cd ..
 
       - name: Upload rootfs.7z
         uses: actions/upload-artifact@v4.0.0
         with:
           # Artifact name
           name: rootfs_${{ matrix.desktop }}_${{ matrix.kernel }}
-          path: rootfs.7z
+          path: artifacts/*
           compression-level: 0
   esp:
     name: Build esp partition
