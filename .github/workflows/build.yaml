@@ -169,6 +169,7 @@ jobs:
           echo "${{ fromJson(steps.image-download.outputs.downloaded_files)[0] }}"
           unxz ${{ fromJson(steps.image-download.outputs.downloaded_files)[0] }}
           mv *.img manjaro.img
+          chmod +x image_mount.sh
           ./image_mount.sh manjaro.img ./mnt/
           ls ./mnt/
 
