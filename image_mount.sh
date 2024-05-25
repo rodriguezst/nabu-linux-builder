@@ -25,8 +25,8 @@ if [ ! -d "$MOUNT_BASE_DIR" ]; then
   fi
 fi
 
-# Read the partition list with sfdisk
-PARTITIONS=$(sfdisk -d "$IMG_FILE" | grep '^/dev/')
+# Read the partition list with fdisk
+PARTITIONS=$(fdisk -lu "$IMG_FILE" | grep '^/')
 
 # Partition counter
 PART_NUM=0
@@ -36,8 +36,8 @@ echo "$PARTITIONS"
 
 # Mount each partition
 echo "$PARTITIONS" | while read -r line; do
-  PART_START=$(echo $line | awk '{print $4}' | sed 's/,//')
-  PART_SIZE=$(echo $line | awk '{print $6}' | sed 's/,//')
+  PART_START=$(echo $line | awk '{print $2}')
+  PART_SIZE=$(echo $line | awk '{print $4}')
   MOUNT_POINT="$MOUNT_BASE_DIR/part$PART_NUM"
   mkdir -p "$MOUNT_POINT"
 
