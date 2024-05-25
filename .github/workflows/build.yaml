@@ -171,7 +171,7 @@ jobs:
           mv *.img manjaro.img
           chmod +x image_mount.sh
           which sfdisk
-          ./image_mount.sh manjaro.img ./mnt/
+          sudo ./image_mount.sh manjaro.img ./mnt
           ls ./mnt/
 
       - name: Upload rootfs.7z
