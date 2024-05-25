@@ -172,7 +172,7 @@ jobs:
           fdisk -lu manjaro.img
           chmod +x image_mount.sh
           sudo ./image_mount.sh manjaro.img ./mnt
-          find ./mnt/
+          sudo find ./mnt/
 
       - name: Upload rootfs.7z
         uses: actions/upload-artifact@v4.0.0
