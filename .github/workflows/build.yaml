@@ -27,11 +27,13 @@ jobs:
       - name: Build kernel
         run: |
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- xiaomi_nabu_maverick_defconfig
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz dtbs
+          make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
           mkdir -p ./install/boot/dtbs
+          _kernel_version="$(make kernelrelease -s)"
+          cp arch/arm64/boot/Image.gz ./install/boot/vmlinuz-$_kernel_version
           make ARCH=arm64 install INSTALL_PATH=./install/boot
           make ARCH=arm64 dtbs_install INSTALL_DTBS_PATH=./install/boot/dtbs
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
+          make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
           rm -rf ./install/lib/modules/
           make ARCH=arm64 modules_install INSTALL_MOD_PATH=./install
           cd ./install && tar zcvf ../kernel.tar.gz . && cd ..
