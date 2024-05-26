@@ -174,10 +174,10 @@ jobs:
           sudo ./image_mount.sh manjaro.img ./mnt
           #sudo find ./mnt/
           sudo rm -rf ./mnt/part1/usr/lib/modules/*
-          sudo cp ./lib/modules/* ./mnt/usr/lib/modules/
+          sudo cp -rf ./lib/modules/* ./mnt/usr/lib/modules/
           # TODO: Copy kernel binary to rootfs
           sudo ./image_extract.sh manjaro.img ./artifacts 1
-          cd ./mnt/part1 && tar zcvf ../../artifacts/rootfs.tar.gz . && cd ..
+          cd ./mnt/part1 && sudo tar zcvf ../../artifacts/rootfs.tar.gz . && cd ..
 
       - name: Upload rootfs.7z
         uses: actions/upload-artifact@v4.0.0
