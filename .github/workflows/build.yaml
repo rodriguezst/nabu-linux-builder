@@ -176,6 +176,7 @@ jobs:
           sudo rm -rf ./mnt/part1/usr/lib/modules/*
           sudo cp -rf ./lib/modules/* ./mnt/part1/usr/lib/modules/
           # TODO: Copy kernel binary to rootfs
+          sudo umount -R ./mnt && rmdir ./mnt
           chmod +x image_extract.sh
           sudo ./image_extract.sh manjaro.img ./artifacts 1
           cd ./mnt/part1 && sudo tar zcvf ../../artifacts/rootfs.tar.gz . && cd ..
@@ -184,7 +185,7 @@ jobs:
         uses: actions/upload-artifact@v4.0.0
         with:
           # Artifact name
-          name: rootfs_${{ matrix.desktop }}_${{ matrix.kernel }}
+          name: rootfs_${{ matrix.desktop }}
           path: artifacts/*
           compression-level: 0
   esp:
