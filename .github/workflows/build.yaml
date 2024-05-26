@@ -172,9 +172,9 @@ jobs:
           fdisk -lu manjaro.img
           chmod +x image_mount.sh
           sudo ./image_mount.sh manjaro.img ./mnt
-          sudo find ./mnt/
-          sudo rm -rf ./mnt/part1/lib/modules/*
-          sudo cp ./lib/modules/* ./mnt/lib/modules/
+          #sudo find ./mnt/
+          sudo rm -rf ./mnt/part1/usr/lib/modules/*
+          sudo cp ./lib/modules/* ./mnt/usr/lib/modules/
           # TODO: Copy kernel binary to rootfs
           sudo ./image_extract.sh manjaro.img ./artifacts 1
           cd ./mnt/part1 && tar zcvf ../../artifacts/rootfs.tar.gz . && cd ..
