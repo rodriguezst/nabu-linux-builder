@@ -64,7 +64,7 @@ jobs:
         run: |
           mkdir ./artifacts
           tar zxvf kernel.tar.gz/kernel.tar.gz -C ./
-          cat ./vmlinuz* ./*.dtb > zImage
+          cat ./boot/vmlinuz* ./boot/*.dtb > zImage
           mkbootimg --kernel zImage --cmdline "console=tty0 root=PARTLABEL=linux rw rootwait" --base 0x00000000 --kernel_offset 0x00008000 --tags_offset 0x00000100 --pagesize 4096 --id -o fastboot_kernel.img
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.0.0
