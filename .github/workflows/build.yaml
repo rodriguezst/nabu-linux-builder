@@ -55,7 +55,7 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt-get update
-          sudo apt-get -y install abootimg
+          sudo apt-get -y install mkbootimg
       - uses: actions/download-artifact@v4
         with:
           pattern: kernel.tar.gz
